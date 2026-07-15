@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -22,7 +22,9 @@ from custom_components.astra_pool.models import PoolConfiguration
 
 from .conftest import TEST_API_CODE
 
-MOCK_SETUP_ENTRY = "custom_components.astra_pool.async_setup_entry"
+PATCH_CLIENT = "custom_components.astra_pool.config_flow.AstraPoolApiClient"
+PATCH_SESSION = "custom_components.astra_pool.config_flow.async_get_clientsession"
+PATCH_SETUP_ENTRY = "custom_components.astra_pool.async_setup_entry"
 
 
 def _minimal_config() -> PoolConfiguration:
@@ -47,10 +49,9 @@ async def test_successful_flow(hass: HomeAssistant) -> None:
     assert result["step_id"] == "user"
 
     with (
-        patch(
-            "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-        ) as mock_client_cls,
-        patch(MOCK_SETUP_ENTRY, return_value=True),
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+        patch(PATCH_SETUP_ENTRY, return_value=True),
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(return_value=_minimal_config())
@@ -83,10 +84,9 @@ async def test_successful_flow_pool_spa(hass: HomeAssistant) -> None:
     )
 
     with (
-        patch(
-            "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-        ) as mock_client_cls,
-        patch(MOCK_SETUP_ENTRY, return_value=True),
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+        patch(PATCH_SETUP_ENTRY, return_value=True),
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(return_value=spa_config)
@@ -106,9 +106,10 @@ async def test_invalid_auth(hass: HomeAssistant) -> None:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
             side_effect=AstraPoolAuthenticationError("Invalid")
@@ -129,9 +130,10 @@ async def test_api_not_enabled(hass: HomeAssistant) -> None:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
             side_effect=AstraPoolApiNotEnabledError("Not enabled")
@@ -152,9 +154,10 @@ async def test_cannot_connect(hass: HomeAssistant) -> None:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
             side_effect=AstraPoolConnectionError("timeout")
@@ -175,9 +178,10 @@ async def test_pool_not_connected(hass: HomeAssistant) -> None:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
             side_effect=AstraPoolNotConnectedError("offline")
@@ -198,9 +202,10 @@ async def test_rate_limited(hass: HomeAssistant) -> None:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(PATCH_CLIENT) as mock_client_cls,
+        patch(PATCH_SESSION, return_value=MagicMock()),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
             side_effect=AstraPoolRateLimitError("throttled")
