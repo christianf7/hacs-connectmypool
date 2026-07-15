@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import AstraPoolConfigEntry
 from .const import ActionCode, CONF_POOL_API_CODE, LOGGER
@@ -16,7 +16,7 @@ from .models import LightingZoneConfig
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: AstraPoolConfigEntry,
-    async_add_entities: AddConfigEntryEntitiesCallback,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Astra Pool button entities for lighting zone sync."""
     coordinator = entry.runtime_data

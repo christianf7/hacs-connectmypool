@@ -5,7 +5,7 @@ from __future__ import annotations
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import AstraPoolConfigEntry
 from .const import ActionCode, CONF_POOL_API_CODE
@@ -16,7 +16,7 @@ from .models import SolarConfig
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: AstraPoolConfigEntry,
-    async_add_entities: AddConfigEntryEntitiesCallback,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Astra Pool number entities for solar set temperatures."""
     coordinator = entry.runtime_data

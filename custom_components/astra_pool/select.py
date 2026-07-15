@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import AstraPoolConfigEntry
 from .const import (
@@ -19,8 +19,6 @@ from .const import (
     SOLAR_MODE_NAMES,
     VALVE_MODE_NAMES,
     PoolSpaSelection,
-    SolarMode,
-    ValveMode,
 )
 from .entity import AstraPoolEntity, derive_pool_id
 from .models import ChannelConfig, SolarConfig, ValveConfig
@@ -29,7 +27,7 @@ from .models import ChannelConfig, SolarConfig, ValveConfig
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: AstraPoolConfigEntry,
-    async_add_entities: AddConfigEntryEntitiesCallback,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Astra Pool select entities."""
     coordinator = entry.runtime_data

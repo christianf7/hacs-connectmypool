@@ -6,7 +6,7 @@ from typing import Any
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import AstraPoolConfigEntry
 from .const import (
@@ -23,7 +23,7 @@ from .models import ChannelConfig
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: AstraPoolConfigEntry,
-    async_add_entities: AddConfigEntryEntitiesCallback,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Astra Pool switch entities for simple on/off channels."""
     coordinator = entry.runtime_data
