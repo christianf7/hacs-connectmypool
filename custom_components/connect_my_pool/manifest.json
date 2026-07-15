@@ -3,6 +3,7 @@
   "name": "Connect My Pool",
   "codeowners": ["@christianf7"],
   "config_flow": true,
+  "dependencies": ["frontend", "http"],
   "documentation": "https://github.com/christianf7/hacs-connectmypool",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/christianf7/hacs-connectmypool/issues",

@@ -71,6 +71,46 @@ Colour-enabled lighting zones expose available colour programs as **effects** in
 
 The ConnectMyPool API does not provide a direct "set channel mode" action — it only supports **cycling** through modes. This integration calculates the number of cycles needed to reach the desired mode and includes safety limits to prevent runaway cycling.
 
+## Custom Dashboard Card
+
+This integration includes a built-in Lovelace card that provides a beautiful pool control dashboard. The card is **automatically registered** when the integration loads — no manual resource setup required.
+
+### Adding the Card
+
+1. Open a Home Assistant dashboard.
+2. Click **Edit Dashboard** → **Add Card**.
+3. Search for **Connect My Pool** in the card picker.
+4. Configure the card title and options.
+
+### Manual YAML Configuration
+
+```yaml
+type: custom:connect-my-pool-card
+title: My Pool
+show_header: true
+```
+
+### Card Features
+
+- **Water temperature** displayed as an animated ring gauge
+- **Pool/Spa mode** toggle in the header badge (tap to switch)
+- **Heater controls** with current/target temperature and +/− adjustment
+- **Equipment tiles** for channels — tap to cycle through modes
+- **Switch tiles** for simple on/off channels
+- **Light controls** with toggle and colour sync button
+- **Solar controls** with mode selector and target temperature
+- **Valve controls** with mode dropdowns
+- **Favourite selector** dropdown
+
+The card automatically discovers all Connect My Pool entities and adapts its layout based on your pool's equipment.
+
+> **Note:** If you use Lovelace in YAML mode, you must manually add the resource:
+> ```yaml
+> resources:
+>   - url: /connect-my-pool/connect-my-pool-card.js
+>     type: module
+> ```
+
 ## Polling & Throttling
 
 The ConnectMyPool API enforces a **60-second throttle** on status requests. This integration polls every **61 seconds** to respect this limit.

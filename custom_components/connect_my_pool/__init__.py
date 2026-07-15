@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -13,6 +16,7 @@ from .const import CONF_POOL_API_CODE, LOGGER
 from .coordinator import ConnectMyPoolDataUpdateCoordinator
 from .entity import derive_pool_id
 from .exceptions import ConnectMyPoolConnectionError, ConnectMyPoolError
+from .frontend import ConnectMyPoolCardRegistration
 
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
@@ -25,6 +29,12 @@ PLATFORMS: list[Platform] = [
 ]
 
 ConnectMyPoolConfigEntry = ConfigEntry[ConnectMyPoolDataUpdateCoordinator]
+
+
+def _read_version() -> str:
+    manifest = Path(__file__).parent / "manifest.json"
+    with open(manifest, encoding="utf-8") as f:
+        return json.load(f).get("version", "0.0.0")
 
 
 async def async_setup_entry(
@@ -48,6 +58,9 @@ async def async_setup_entry(
     LOGGER.debug("Pool ID derived: %s", pool_id)
 
     entry.runtime_data = coordinator
+
+    card_registration = ConnectMyPoolCardRegistration(hass, _read_version())
+    await card_registration.async_register()
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
