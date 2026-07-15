@@ -3,9 +3,9 @@
   "name": "Connect My Pool",
   "codeowners": ["@christianf7"],
   "config_flow": true,
-  "documentation": "https://github.com/christianf7/HA-Astra-Integration",
+  "documentation": "https://github.com/christianf7/hacs-connectmypool",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/christianf7/HA-Astra-Integration/issues",
+  "issue_tracker": "https://github.com/christianf7/hacs-connectmypool/issues",
   "requirements": [],
   "version": "0.1.0"
 }
