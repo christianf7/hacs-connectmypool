@@ -1,4 +1,4 @@
-"""Tests for the Astra Pool coordinator."""
+"""Tests for the Connect My Pool coordinator."""
 
 from __future__ import annotations
 
@@ -10,13 +10,13 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from custom_components.astra_pool.coordinator import AstraPoolDataUpdateCoordinator
-from custom_components.astra_pool.exceptions import (
-    AstraPoolAuthenticationError,
-    AstraPoolConnectionError,
-    AstraPoolRateLimitError,
+from custom_components.connect_my_pool.coordinator import ConnectMyPoolDataUpdateCoordinator
+from custom_components.connect_my_pool.exceptions import (
+    ConnectMyPoolAuthenticationError,
+    ConnectMyPoolConnectionError,
+    ConnectMyPoolRateLimitError,
 )
-from custom_components.astra_pool.models import AstraPoolData
+from custom_components.connect_my_pool.models import ConnectMyPoolData
 
 from .conftest import TEST_API_CODE
 
@@ -46,14 +46,14 @@ async def test_coordinator_setup_and_update(
     hass: HomeAssistant, mock_api, mock_entry, mock_pool_config, mock_pool_status
 ) -> None:
     """Test that _async_setup loads config and _async_update_data returns status."""
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
 
     await coordinator._async_setup()
     assert coordinator.pool_config == mock_pool_config
     mock_api.async_get_configuration.assert_awaited_once()
 
     result = await coordinator._async_update_data()
-    assert isinstance(result, AstraPoolData)
+    assert isinstance(result, ConnectMyPoolData)
     assert result.config == mock_pool_config
     assert result.status == mock_pool_status
 
@@ -63,10 +63,10 @@ async def test_coordinator_auth_failure_setup(
 ) -> None:
     """Test that auth failure during setup raises ConfigEntryAuthFailed."""
     mock_api.async_get_configuration = AsyncMock(
-        side_effect=AstraPoolAuthenticationError("bad code")
+        side_effect=ConnectMyPoolAuthenticationError("bad code")
     )
 
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
 
     with pytest.raises(ConfigEntryAuthFailed):
         await coordinator._async_setup()
@@ -77,10 +77,10 @@ async def test_coordinator_connection_failure_setup(
 ) -> None:
     """Test that connection failure during setup raises UpdateFailed."""
     mock_api.async_get_configuration = AsyncMock(
-        side_effect=AstraPoolConnectionError("timeout")
+        side_effect=ConnectMyPoolConnectionError("timeout")
     )
 
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
 
     with pytest.raises(UpdateFailed):
         await coordinator._async_setup()
@@ -90,11 +90,11 @@ async def test_coordinator_connection_failure_update(
     hass: HomeAssistant, mock_api, mock_entry, mock_pool_config
 ) -> None:
     """Test that connection failures during update raise UpdateFailed."""
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
     await coordinator._async_setup()
 
     mock_api.async_get_status = AsyncMock(
-        side_effect=AstraPoolConnectionError("timeout")
+        side_effect=ConnectMyPoolConnectionError("timeout")
     )
 
     with pytest.raises(UpdateFailed):
@@ -105,11 +105,11 @@ async def test_coordinator_auth_failure_update(
     hass: HomeAssistant, mock_api, mock_entry, mock_pool_config
 ) -> None:
     """Test that auth failure during update raises ConfigEntryAuthFailed."""
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
     await coordinator._async_setup()
 
     mock_api.async_get_status = AsyncMock(
-        side_effect=AstraPoolAuthenticationError("expired")
+        side_effect=ConnectMyPoolAuthenticationError("expired")
     )
 
     with pytest.raises(ConfigEntryAuthFailed):
@@ -120,14 +120,14 @@ async def test_coordinator_throttle_recovery(
     hass: HomeAssistant, mock_api, mock_entry, mock_pool_config, mock_pool_status
 ) -> None:
     """Test that a single throttle hit reuses existing data."""
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
     await coordinator._async_setup()
 
     first_data = await coordinator._async_update_data()
     coordinator.data = first_data
 
     mock_api.async_get_status = AsyncMock(
-        side_effect=AstraPoolRateLimitError("throttled")
+        side_effect=ConnectMyPoolRateLimitError("throttled")
     )
 
     result = await coordinator._async_update_data()
@@ -139,14 +139,14 @@ async def test_coordinator_throttle_repeated_fails(
     hass: HomeAssistant, mock_api, mock_entry, mock_pool_config
 ) -> None:
     """Test that repeated throttle hits eventually raise UpdateFailed."""
-    coordinator = AstraPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
+    coordinator = ConnectMyPoolDataUpdateCoordinator(hass, mock_entry, mock_api)
     await coordinator._async_setup()
 
     coordinator.data = None
     coordinator._consecutive_throttles = 3
 
     mock_api.async_get_status = AsyncMock(
-        side_effect=AstraPoolRateLimitError("throttled")
+        side_effect=ConnectMyPoolRateLimitError("throttled")
     )
 
     with pytest.raises(UpdateFailed, match="rate-limit"):

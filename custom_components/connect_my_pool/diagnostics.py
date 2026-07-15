@@ -1,4 +1,4 @@
-"""Diagnostics support for the Astra Pool integration."""
+"""Diagnostics support for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -7,14 +7,14 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import CONF_POOL_API_CODE
 
 REDACTED = "**REDACTED**"
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: AstraPoolConfigEntry
+    hass: HomeAssistant, entry: ConnectMyPoolConfigEntry
 ) -> dict[str, Any]:
     """Return diagnostics for a config entry."""
     coordinator = entry.runtime_data

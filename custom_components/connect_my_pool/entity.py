@@ -1,4 +1,4 @@
-"""Base entity for the Astra Pool integration."""
+"""Base entity for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import AstraPoolDataUpdateCoordinator
+from .coordinator import ConnectMyPoolDataUpdateCoordinator
 from .models import (
     ChannelStatus,
     HeaterStatus,
@@ -23,14 +23,14 @@ def derive_pool_id(api_code: str) -> str:
     return hashlib.sha256(api_code.encode()).hexdigest()[:12]
 
 
-class AstraPoolEntity(CoordinatorEntity[AstraPoolDataUpdateCoordinator]):
-    """Shared base for all Astra Pool entities."""
+class ConnectMyPoolEntity(CoordinatorEntity[ConnectMyPoolDataUpdateCoordinator]):
+    """Shared base for all Connect My Pool entities."""
 
     _attr_has_entity_name = True
 
     def __init__(
         self,
-        coordinator: AstraPoolDataUpdateCoordinator,
+        coordinator: ConnectMyPoolDataUpdateCoordinator,
         pool_id: str,
         unique_suffix: str,
     ) -> None:
@@ -42,15 +42,11 @@ class AstraPoolEntity(CoordinatorEntity[AstraPoolDataUpdateCoordinator]):
     def device_info(self) -> DeviceInfo:
         return DeviceInfo(
             identifiers={(DOMAIN, self._pool_id)},
-            name="Astra Pool",
+            name="Connect My Pool",
             manufacturer="AstralPool",
             model="ConnectMyPool",
             configuration_url="https://www.connectmypool.com.au",
         )
-
-    # ------------------------------------------------------------------
-    # Convenience helpers for looking up status by device number
-    # ------------------------------------------------------------------
 
     def _heater_status(self, heater_number: int) -> HeaterStatus | None:
         for h in self.coordinator.data.status.heaters:

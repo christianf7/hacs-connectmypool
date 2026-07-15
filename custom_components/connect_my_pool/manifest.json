@@ -1,6 +1,6 @@
 {
-  "domain": "astra_pool",
-  "name": "Astra Pool",
+  "domain": "connect_my_pool",
+  "name": "Connect My Pool",
   "codeowners": ["@christianf7"],
   "config_flow": true,
   "documentation": "https://github.com/christianf7/HA-Astra-Integration",

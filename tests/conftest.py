@@ -1,4 +1,4 @@
-"""Shared test fixtures for the Astra Pool integration tests."""
+"""Shared test fixtures for the Connect My Pool integration tests."""
 
 from __future__ import annotations
 
@@ -7,15 +7,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from custom_components.astra_pool.const import CONF_POOL_API_CODE, DOMAIN
+from custom_components.connect_my_pool.const import CONF_POOL_API_CODE, DOMAIN
 
 
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
     """Enable custom integrations for all tests."""
     yield
-from custom_components.astra_pool.models import (
-    AstraPoolData,
+from custom_components.connect_my_pool.models import (
+    ConnectMyPoolData,
     ChannelConfig,
     ChannelStatus,
     FavouriteConfig,
@@ -115,9 +115,9 @@ def mock_pool_status() -> PoolStatus:
 @pytest.fixture
 def mock_pool_data(
     mock_pool_config: PoolConfiguration, mock_pool_status: PoolStatus
-) -> AstraPoolData:
+) -> ConnectMyPoolData:
     """Return combined pool data for testing."""
-    return AstraPoolData(config=mock_pool_config, status=mock_pool_status)
+    return ConnectMyPoolData(config=mock_pool_config, status=mock_pool_status)
 
 
 def make_config_raw() -> dict[str, Any]:

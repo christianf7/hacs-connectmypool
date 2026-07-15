@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Connect to Astra Pool",
+        "title": "Connect My Pool",
         "description": "Enter your ConnectMyPool Pool API Code. You can find this on the Home Automation page of the ConnectMyPool website after API access has been approved.",
         "data": {
           "pool_api_code": "Pool API Code"

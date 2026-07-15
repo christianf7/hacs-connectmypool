@@ -1,4 +1,4 @@
-"""Select platform for the Astra Pool integration."""
+"""Select platform for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import (
     ActionCode,
     CHANNEL_CYCLE_SEQUENCES,
@@ -20,55 +20,47 @@ from .const import (
     VALVE_MODE_NAMES,
     PoolSpaSelection,
 )
-from .entity import AstraPoolEntity, derive_pool_id
+from .entity import ConnectMyPoolEntity, derive_pool_id
 from .models import ChannelConfig, SolarConfig, ValveConfig
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: AstraPoolConfigEntry,
+    entry: ConnectMyPoolConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Astra Pool select entities."""
+    """Set up Connect My Pool select entities."""
     coordinator = entry.runtime_data
     pool_id = derive_pool_id(entry.data[CONF_POOL_API_CODE])
     config = coordinator.pool_config
 
     entities: list[SelectEntity] = []
 
-    # Pool / Spa selection
     if config.pool_spa_selection_enabled:
-        entities.append(AstraPoolSpaSelect(coordinator, pool_id))
+        entities.append(ConnectMyPoolSpaSelect(coordinator, pool_id))
 
-    # Favourites
     if config.has_favourites and config.favourites:
-        entities.append(AstraPoolFavouriteSelect(coordinator, pool_id, config.favourites))
+        entities.append(ConnectMyPoolFavouriteSelect(coordinator, pool_id, config.favourites))
 
-    # Valves
     if config.has_valves:
         for valve in config.valves:
-            entities.append(AstraPoolValveSelect(coordinator, pool_id, valve))
+            entities.append(ConnectMyPoolValveSelect(coordinator, pool_id, valve))
 
-    # Solar systems (mode selector)
     if config.has_solar_systems:
         for solar in config.solar_systems:
-            entities.append(AstraPoolSolarModeSelect(coordinator, pool_id, solar))
+            entities.append(ConnectMyPoolSolarModeSelect(coordinator, pool_id, solar))
 
-    # Multi-mode channels (Off / Auto / On)
     if config.has_channels:
         for channel in config.channels:
             if channel.function in MULTI_MODE_CHANNEL_FUNCTIONS:
                 entities.append(
-                    AstraPoolChannelSelect(coordinator, pool_id, channel)
+                    ConnectMyPoolChannelSelect(coordinator, pool_id, channel)
                 )
 
     async_add_entities(entities)
 
 
-# ---------------------------------------------------------------------------
-# Pool / Spa
-# ---------------------------------------------------------------------------
-class AstraPoolSpaSelect(AstraPoolEntity, SelectEntity):
+class ConnectMyPoolSpaSelect(ConnectMyPoolEntity, SelectEntity):
     """Pool / Spa mode selector."""
 
     _attr_options = ["Pool", "Spa"]
@@ -94,10 +86,7 @@ class AstraPoolSpaSelect(AstraPoolEntity, SelectEntity):
         await self.coordinator.async_request_refresh()
 
 
-# ---------------------------------------------------------------------------
-# Favourites
-# ---------------------------------------------------------------------------
-class AstraPoolFavouriteSelect(AstraPoolEntity, SelectEntity):
+class ConnectMyPoolFavouriteSelect(ConnectMyPoolEntity, SelectEntity):
     """Active favourite selector."""
 
     _attr_name = "Favourite"
@@ -126,10 +115,7 @@ class AstraPoolFavouriteSelect(AstraPoolEntity, SelectEntity):
         await self.coordinator.async_request_refresh()
 
 
-# ---------------------------------------------------------------------------
-# Valves
-# ---------------------------------------------------------------------------
-class AstraPoolValveSelect(AstraPoolEntity, SelectEntity):
+class ConnectMyPoolValveSelect(ConnectMyPoolEntity, SelectEntity):
     """Valve mode selector (Off / Auto / On)."""
 
     _attr_options = ["Off", "Auto", "On"]
@@ -158,10 +144,7 @@ class AstraPoolValveSelect(AstraPoolEntity, SelectEntity):
         await self.coordinator.async_request_refresh()
 
 
-# ---------------------------------------------------------------------------
-# Solar mode
-# ---------------------------------------------------------------------------
-class AstraPoolSolarModeSelect(AstraPoolEntity, SelectEntity):
+class ConnectMyPoolSolarModeSelect(ConnectMyPoolEntity, SelectEntity):
     """Solar heater mode selector (Off / Auto / On)."""
 
     _attr_options = ["Off", "Auto", "On"]
@@ -190,10 +173,7 @@ class AstraPoolSolarModeSelect(AstraPoolEntity, SelectEntity):
         await self.coordinator.async_request_refresh()
 
 
-# ---------------------------------------------------------------------------
-# Multi-mode channels
-# ---------------------------------------------------------------------------
-class AstraPoolChannelSelect(AstraPoolEntity, SelectEntity):
+class ConnectMyPoolChannelSelect(ConnectMyPoolEntity, SelectEntity):
     """Multi-mode channel selector using Cycle Channel Mode action.
 
     The ConnectMyPool API does not expose a direct "set mode" action for

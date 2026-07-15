@@ -1,4 +1,4 @@
-"""Climate platform for the Astra Pool integration (heaters)."""
+"""Climate platform for the Connect My Pool integration (heaters)."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import (
     ActionCode,
     CONF_POOL_API_CODE,
@@ -21,16 +21,16 @@ from .const import (
     HeaterMode,
     PoolSpaSelection,
 )
-from .entity import AstraPoolEntity, derive_pool_id
+from .entity import ConnectMyPoolEntity, derive_pool_id
 from .models import HeaterConfig
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: AstraPoolConfigEntry,
+    entry: ConnectMyPoolConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Astra Pool climate entities for each heater."""
+    """Set up Connect My Pool climate entities for each heater."""
     coordinator = entry.runtime_data
     pool_id = derive_pool_id(entry.data[CONF_POOL_API_CODE])
     config = coordinator.pool_config
@@ -38,10 +38,10 @@ async def async_setup_entry(
     if not config.has_heaters:
         return
 
-    entities: list[AstraPoolHeaterClimate] = []
+    entities: list[ConnectMyPoolHeaterClimate] = []
     for heater in config.heaters:
         entities.append(
-            AstraPoolHeaterClimate(
+            ConnectMyPoolHeaterClimate(
                 coordinator,
                 pool_id,
                 heater,
@@ -53,8 +53,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class AstraPoolHeaterClimate(AstraPoolEntity, ClimateEntity):
-    """Representation of an AstralPool heater as a climate entity."""
+class ConnectMyPoolHeaterClimate(ConnectMyPoolEntity, ClimateEntity):
+    """Representation of a pool heater as a climate entity."""
 
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_target_temperature_step = 1

@@ -1,4 +1,4 @@
-"""Switch platform for the Astra Pool integration (simple on/off channels)."""
+"""Switch platform for the Connect My Pool integration (simple on/off channels)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import (
     ActionCode,
     CONF_POOL_API_CODE,
@@ -16,16 +16,16 @@ from .const import (
     MAX_CHANNEL_CYCLES,
     MULTI_MODE_CHANNEL_FUNCTIONS,
 )
-from .entity import AstraPoolEntity, derive_pool_id
+from .entity import ConnectMyPoolEntity, derive_pool_id
 from .models import ChannelConfig
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: AstraPoolConfigEntry,
+    entry: ConnectMyPoolConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Astra Pool switch entities for simple on/off channels."""
+    """Set up Connect My Pool switch entities for simple on/off channels."""
     coordinator = entry.runtime_data
     pool_id = derive_pool_id(entry.data[CONF_POOL_API_CODE])
     config = coordinator.pool_config
@@ -33,17 +33,17 @@ async def async_setup_entry(
     if not config.has_channels:
         return
 
-    entities: list[AstraPoolChannelSwitch] = []
+    entities: list[ConnectMyPoolChannelSwitch] = []
     for channel in config.channels:
         if channel.function not in MULTI_MODE_CHANNEL_FUNCTIONS:
             entities.append(
-                AstraPoolChannelSwitch(coordinator, pool_id, channel)
+                ConnectMyPoolChannelSwitch(coordinator, pool_id, channel)
             )
 
     async_add_entities(entities)
 
 
-class AstraPoolChannelSwitch(AstraPoolEntity, SwitchEntity):
+class ConnectMyPoolChannelSwitch(ConnectMyPoolEntity, SwitchEntity):
     """Simple on/off channel modelled as a switch.
 
     For two-mode channels (On / Off), a single cycle toggles between the two

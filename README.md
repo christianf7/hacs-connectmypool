@@ -1,4 +1,4 @@
-# Astra Pool — Home Assistant Integration
+# Connect My Pool — Home Assistant Integration
 
 A custom Home Assistant integration for controlling AstralPool pool and spa systems through the [ConnectMyPool](https://www.connectmypool.com.au) cloud API.
 
@@ -29,19 +29,19 @@ This integration works with pool and spa systems that meet the following require
 1. Open HACS in Home Assistant.
 2. Click the **⋮** menu → **Custom repositories**.
 3. Add `https://github.com/christianf7/HA-Astra-Integration` with category **Integration**.
-4. Search for **Astra Pool** and install it.
+4. Search for **Connect My Pool** and install it.
 5. Restart Home Assistant.
 
 ### Manual Installation
 
 1. Download the latest release from [GitHub](https://github.com/christianf7/HA-Astra-Integration/releases).
-2. Copy the `custom_components/astra_pool` folder to your Home Assistant `custom_components/` directory.
+2. Copy the `custom_components/connect_my_pool` folder to your Home Assistant `custom_components/` directory.
 3. Restart Home Assistant.
 
 ## Setup
 
 1. Go to **Settings → Devices & services → Add Integration**.
-2. Search for **Astra Pool**.
+2. Search for **Connect My Pool**.
 3. Enter your **Pool API Code** when prompted.
 4. The integration will validate your code, discover your pool equipment, and create entities automatically.
 
@@ -89,7 +89,7 @@ Add the following to your `configuration.yaml`:
 logger:
   default: info
   logs:
-    custom_components.astra_pool: debug
+    custom_components.connect_my_pool: debug
 ```
 
 Restart Home Assistant and check the logs for detailed API communication info.
@@ -107,7 +107,7 @@ Restart Home Assistant and check the logs for detailed API communication info.
 
 ### Diagnostics
 
-This integration supports Home Assistant diagnostics. Go to **Settings → Devices & services → Astra Pool → ⋮ → Download diagnostics** to generate a diagnostic report. All sensitive information (API codes) is automatically redacted.
+This integration supports Home Assistant diagnostics. Go to **Settings → Devices & services → Connect My Pool → ⋮ → Download diagnostics** to generate a diagnostic report. All sensitive information (API codes) is automatically redacted.
 
 ## Known Limitations
 

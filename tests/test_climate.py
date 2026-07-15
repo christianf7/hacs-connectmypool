@@ -1,4 +1,4 @@
-"""Tests for the Astra Pool climate platform."""
+"""Tests for the Connect My Pool climate platform."""
 
 from __future__ import annotations
 
@@ -8,10 +8,10 @@ import pytest
 
 from homeassistant.components.climate import HVACMode
 
-from custom_components.astra_pool.climate import AstraPoolHeaterClimate
-from custom_components.astra_pool.entity import derive_pool_id
-from custom_components.astra_pool.models import (
-    AstraPoolData,
+from custom_components.connect_my_pool.climate import ConnectMyPoolHeaterClimate
+from custom_components.connect_my_pool.entity import derive_pool_id
+from custom_components.connect_my_pool.models import (
+    ConnectMyPoolData,
     HeaterConfig,
     HeaterStatus,
     PoolConfiguration,
@@ -41,7 +41,7 @@ def coordinator_mock(mock_pool_data):
 def test_heater_off_state(coordinator_mock, pool_id) -> None:
     """Test that a heater with mode=0 reports OFF."""
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -59,7 +59,7 @@ def test_heater_heat_state(coordinator_mock, pool_id, mock_pool_data) -> None:
             heater_number=1, mode=1, set_temperature=28, spa_set_temperature=36
         ),
     )
-    coordinator_mock.data = AstraPoolData(
+    coordinator_mock.data = ConnectMyPoolData(
         config=mock_pool_data.config,
         status=PoolStatus(
             pool_spa_selection=status.pool_spa_selection,
@@ -75,7 +75,7 @@ def test_heater_heat_state(coordinator_mock, pool_id, mock_pool_data) -> None:
     )
 
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -93,7 +93,7 @@ def test_heater_cool_state(coordinator_mock, pool_id, mock_pool_data) -> None:
             heater_number=1, mode=1, set_temperature=28, spa_set_temperature=36
         ),
     )
-    coordinator_mock.data = AstraPoolData(
+    coordinator_mock.data = ConnectMyPoolData(
         config=mock_pool_data.config,
         status=PoolStatus(
             pool_spa_selection=status.pool_spa_selection,
@@ -109,7 +109,7 @@ def test_heater_cool_state(coordinator_mock, pool_id, mock_pool_data) -> None:
     )
 
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -122,7 +122,7 @@ def test_heater_cool_state(coordinator_mock, pool_id, mock_pool_data) -> None:
 def test_heater_hvac_modes_with_cool(coordinator_mock, pool_id) -> None:
     """Test that COOL is in hvac_modes when heat_cool is enabled."""
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -135,7 +135,7 @@ def test_heater_hvac_modes_with_cool(coordinator_mock, pool_id) -> None:
 def test_heater_hvac_modes_without_cool(coordinator_mock, pool_id) -> None:
     """Test that COOL is NOT in hvac_modes when heat_cool is disabled."""
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -150,7 +150,7 @@ def test_heater_hvac_modes_without_cool(coordinator_mock, pool_id) -> None:
 def test_heater_target_temp_pool_mode(coordinator_mock, pool_id) -> None:
     """Test target temperature in pool mode."""
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -165,7 +165,7 @@ def test_heater_target_temp_spa_mode(
 ) -> None:
     """Test target temperature in spa mode."""
     status = mock_pool_data.status
-    coordinator_mock.data = AstraPoolData(
+    coordinator_mock.data = ConnectMyPoolData(
         config=mock_pool_data.config,
         status=PoolStatus(
             pool_spa_selection=0,  # Spa
@@ -181,7 +181,7 @@ def test_heater_target_temp_spa_mode(
     )
 
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,
@@ -194,7 +194,7 @@ def test_heater_target_temp_spa_mode(
 def test_heater_current_temperature(coordinator_mock, pool_id) -> None:
     """Test that the current temperature comes from pool water temp."""
     heater_cfg = HeaterConfig(heater_number=1)
-    entity = AstraPoolHeaterClimate(
+    entity = ConnectMyPoolHeaterClimate(
         coordinator_mock,
         pool_id,
         heater_cfg,

@@ -1,4 +1,4 @@
-"""Tests for the Astra Pool API client."""
+"""Tests for the Connect My Pool API client."""
 
 from __future__ import annotations
 
@@ -8,16 +8,16 @@ from unittest.mock import AsyncMock, MagicMock
 import aiohttp
 import pytest
 
-from custom_components.astra_pool.api import AstraPoolApiClient, _mask_api_code
-from custom_components.astra_pool.exceptions import (
-    AstraPoolActionError,
-    AstraPoolApiNotEnabledError,
-    AstraPoolAuthenticationError,
-    AstraPoolConnectionError,
-    AstraPoolNotConnectedError,
-    AstraPoolRateLimitError,
+from custom_components.connect_my_pool.api import ConnectMyPoolApiClient, _mask_api_code
+from custom_components.connect_my_pool.exceptions import (
+    ConnectMyPoolActionError,
+    ConnectMyPoolApiNotEnabledError,
+    ConnectMyPoolAuthenticationError,
+    ConnectMyPoolConnectionError,
+    ConnectMyPoolNotConnectedError,
+    ConnectMyPoolRateLimitError,
 )
-from custom_components.astra_pool.models import PoolConfiguration, PoolStatus
+from custom_components.connect_my_pool.models import PoolConfiguration, PoolStatus
 
 from .conftest import make_config_raw, make_error_response, make_status_raw
 
@@ -54,7 +54,7 @@ async def test_get_configuration_success(mock_session: MagicMock) -> None:
     raw = make_config_raw()
     _setup_response(mock_session, raw)
 
-    client = AstraPoolApiClient(mock_session, "test-code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "test-code", base_url="https://example.com")
     config = await client.async_get_configuration()
 
     assert isinstance(config, PoolConfiguration)
@@ -71,7 +71,7 @@ async def test_get_status_success(mock_session: MagicMock) -> None:
     raw = make_status_raw()
     _setup_response(mock_session, raw)
 
-    client = AstraPoolApiClient(mock_session, "test-code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "test-code", base_url="https://example.com")
     status = await client.async_get_status()
 
     assert isinstance(status, PoolStatus)
@@ -83,76 +83,76 @@ async def test_get_status_success(mock_session: MagicMock) -> None:
 
 
 async def test_invalid_api_code_raises(mock_session: MagicMock) -> None:
-    """Test that invalid API code returns AstraPoolAuthenticationError."""
+    """Test that invalid API code returns ConnectMyPoolAuthenticationError."""
     _setup_response(mock_session, make_error_response(3, "Invalid API Code"))
 
-    client = AstraPoolApiClient(mock_session, "bad-code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "bad-code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolAuthenticationError, match="Invalid API Code"):
+    with pytest.raises(ConnectMyPoolAuthenticationError, match="Invalid API Code"):
         await client.async_get_configuration()
 
 
 async def test_api_not_enabled_raises(mock_session: MagicMock) -> None:
-    """Test that API not enabled returns AstraPoolApiNotEnabledError."""
+    """Test that API not enabled returns ConnectMyPoolApiNotEnabledError."""
     _setup_response(mock_session, make_error_response(4, "API Not Enabled"))
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolApiNotEnabledError):
+    with pytest.raises(ConnectMyPoolApiNotEnabledError):
         await client.async_get_configuration()
 
 
 async def test_pool_not_connected_raises(mock_session: MagicMock) -> None:
-    """Test that pool not connected returns AstraPoolNotConnectedError."""
+    """Test that pool not connected returns ConnectMyPoolNotConnectedError."""
     _setup_response(mock_session, make_error_response(7, "Pool Not Connected"))
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolNotConnectedError):
+    with pytest.raises(ConnectMyPoolNotConnectedError):
         await client.async_get_status()
 
 
 async def test_rate_limit_raises(mock_session: MagicMock) -> None:
-    """Test that throttle exceeded returns AstraPoolRateLimitError."""
+    """Test that throttle exceeded returns ConnectMyPoolRateLimitError."""
     _setup_response(mock_session, make_error_response(6, "Throttle"))
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolRateLimitError):
+    with pytest.raises(ConnectMyPoolRateLimitError):
         await client.async_get_status()
 
 
 async def test_action_error_raises(mock_session: MagicMock) -> None:
-    """Test that action-specific errors return AstraPoolActionError."""
+    """Test that action-specific errors return ConnectMyPoolActionError."""
     _setup_response(mock_session, make_error_response(10, "Invalid Channel Number"))
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolActionError) as exc_info:
+    with pytest.raises(ConnectMyPoolActionError) as exc_info:
         await client.async_execute_action(1, device_number=99)
 
     assert exc_info.value.failure_code == 10
 
 
 async def test_connection_error_on_timeout(mock_session: MagicMock) -> None:
-    """Test that a timeout raises AstraPoolConnectionError."""
+    """Test that a timeout raises ConnectMyPoolConnectionError."""
     mock_session.post = AsyncMock(side_effect=asyncio.TimeoutError)
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolConnectionError, match="Timeout"):
+    with pytest.raises(ConnectMyPoolConnectionError, match="Timeout"):
         await client.async_get_configuration()
 
 
 async def test_connection_error_on_client_error(mock_session: MagicMock) -> None:
-    """Test that aiohttp errors raise AstraPoolConnectionError."""
+    """Test that aiohttp errors raise ConnectMyPoolConnectionError."""
     mock_session.post = AsyncMock(
         side_effect=aiohttp.ClientError("Connection refused")
     )
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
 
-    with pytest.raises(AstraPoolConnectionError):
+    with pytest.raises(ConnectMyPoolConnectionError):
         await client.async_get_status()
 
 
@@ -162,7 +162,7 @@ async def test_execute_action_success(mock_session: MagicMock) -> None:
         mock_session, {"action_number": 42, "execution_status": 1}
     )
 
-    client = AstraPoolApiClient(mock_session, "code", base_url="https://example.com")
+    client = ConnectMyPoolApiClient(mock_session, "code", base_url="https://example.com")
     result = await client.async_execute_action(4, device_number=1, value="1")
 
     assert result["execution_status"] == 1

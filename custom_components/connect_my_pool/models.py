@@ -1,4 +1,4 @@
-"""Data models for the Astra Pool integration."""
+"""Data models for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -146,7 +146,7 @@ class PoolStatus:
 
 
 @dataclass
-class AstraPoolData:
+class ConnectMyPoolData:
     """Combined config + status held by the coordinator."""
 
     config: PoolConfiguration

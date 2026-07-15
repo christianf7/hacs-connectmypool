@@ -1,4 +1,4 @@
-"""Light platform for the Astra Pool integration."""
+"""Light platform for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -12,23 +12,23 @@ from homeassistant.components.light import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import (
     ActionCode,
     CONF_POOL_API_CODE,
     LIGHTING_MODE_NAMES,
     LightingMode,
 )
-from .entity import AstraPoolEntity, derive_pool_id
+from .entity import ConnectMyPoolEntity, derive_pool_id
 from .models import LightingZoneConfig
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: AstraPoolConfigEntry,
+    entry: ConnectMyPoolConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Astra Pool light entities for each lighting zone."""
+    """Set up Connect My Pool light entities for each lighting zone."""
     coordinator = entry.runtime_data
     pool_id = derive_pool_id(entry.data[CONF_POOL_API_CODE])
     config = coordinator.pool_config
@@ -36,15 +36,15 @@ async def async_setup_entry(
     if not config.has_lighting_zones:
         return
 
-    entities: list[AstraPoolLight] = []
+    entities: list[ConnectMyPoolLight] = []
     for zone in config.lighting_zones:
-        entities.append(AstraPoolLight(coordinator, pool_id, zone))
+        entities.append(ConnectMyPoolLight(coordinator, pool_id, zone))
 
     async_add_entities(entities)
 
 
-class AstraPoolLight(AstraPoolEntity, LightEntity):
-    """Representation of an AstralPool lighting zone."""
+class ConnectMyPoolLight(ConnectMyPoolEntity, LightEntity):
+    """Representation of a pool lighting zone."""
 
     _attr_color_mode = ColorMode.ONOFF
     _attr_supported_color_modes = {ColorMode.ONOFF}

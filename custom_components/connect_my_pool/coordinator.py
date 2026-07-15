@@ -1,4 +1,4 @@
-"""DataUpdateCoordinator for the Astra Pool integration."""
+"""DataUpdateCoordinator for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -9,18 +9,18 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import AstraPoolApiClient
+from .api import ConnectMyPoolApiClient
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
 from .exceptions import (
-    AstraPoolAuthenticationError,
-    AstraPoolConnectionError,
-    AstraPoolError,
-    AstraPoolRateLimitError,
+    ConnectMyPoolAuthenticationError,
+    ConnectMyPoolConnectionError,
+    ConnectMyPoolError,
+    ConnectMyPoolRateLimitError,
 )
-from .models import AstraPoolData, PoolConfiguration
+from .models import ConnectMyPoolData, PoolConfiguration
 
 
-class AstraPoolDataUpdateCoordinator(DataUpdateCoordinator[AstraPoolData]):
+class ConnectMyPoolDataUpdateCoordinator(DataUpdateCoordinator[ConnectMyPoolData]):
     """Central coordinator that fetches data from the ConnectMyPool API."""
 
     config_entry: ConfigEntry
@@ -30,7 +30,7 @@ class AstraPoolDataUpdateCoordinator(DataUpdateCoordinator[AstraPoolData]):
         self,
         hass: HomeAssistant,
         config_entry: ConfigEntry,
-        api: AstraPoolApiClient,
+        api: ConnectMyPoolApiClient,
     ) -> None:
         super().__init__(
             hass,
@@ -46,23 +46,23 @@ class AstraPoolDataUpdateCoordinator(DataUpdateCoordinator[AstraPoolData]):
         """Load pool configuration once during first refresh."""
         try:
             self.pool_config = await self.api.async_get_configuration()
-        except AstraPoolAuthenticationError as err:
+        except ConnectMyPoolAuthenticationError as err:
             raise ConfigEntryAuthFailed(str(err)) from err
-        except AstraPoolConnectionError as err:
+        except ConnectMyPoolConnectionError as err:
             raise UpdateFailed(
                 f"Cannot connect to ConnectMyPool: {err}"
             ) from err
-        except AstraPoolError as err:
+        except ConnectMyPoolError as err:
             raise UpdateFailed(str(err)) from err
 
-    async def _async_update_data(self) -> AstraPoolData:
+    async def _async_update_data(self) -> ConnectMyPoolData:
         """Fetch current pool status (called every update_interval)."""
         try:
             status = await self.api.async_get_status()
             self._consecutive_throttles = 0
-        except AstraPoolAuthenticationError as err:
+        except ConnectMyPoolAuthenticationError as err:
             raise ConfigEntryAuthFailed(str(err)) from err
-        except AstraPoolRateLimitError:
+        except ConnectMyPoolRateLimitError:
             self._consecutive_throttles += 1
             if self._consecutive_throttles <= 3:
                 LOGGER.debug(
@@ -72,14 +72,14 @@ class AstraPoolDataUpdateCoordinator(DataUpdateCoordinator[AstraPoolData]):
                 if self.data is not None:
                     return self.data
             raise UpdateFailed("ConnectMyPool API rate-limit exceeded repeatedly")
-        except AstraPoolConnectionError as err:
+        except ConnectMyPoolConnectionError as err:
             raise UpdateFailed(
                 f"Cannot connect to ConnectMyPool: {err}"
             ) from err
-        except AstraPoolError as err:
+        except ConnectMyPoolError as err:
             raise UpdateFailed(str(err)) from err
 
-        return AstraPoolData(config=self.pool_config, status=status)
+        return ConnectMyPoolData(config=self.pool_config, status=status)
 
     async def async_reload_config(self) -> None:
         """Re-fetch pool configuration on demand."""

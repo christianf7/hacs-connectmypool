@@ -1,4 +1,4 @@
-"""Sensor platform for the Astra Pool integration."""
+"""Sensor platform for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -11,24 +11,24 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import CONF_POOL_API_CODE
-from .entity import AstraPoolEntity, derive_pool_id
+from .entity import ConnectMyPoolEntity, derive_pool_id
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: AstraPoolConfigEntry,
+    entry: ConnectMyPoolConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Astra Pool sensors."""
+    """Set up Connect My Pool sensors."""
     coordinator = entry.runtime_data
     pool_id = derive_pool_id(entry.data[CONF_POOL_API_CODE])
 
-    async_add_entities([AstraPoolWaterTemperatureSensor(coordinator, pool_id)])
+    async_add_entities([ConnectMyPoolWaterTemperatureSensor(coordinator, pool_id)])
 
 
-class AstraPoolWaterTemperatureSensor(AstraPoolEntity, SensorEntity):
+class ConnectMyPoolWaterTemperatureSensor(ConnectMyPoolEntity, SensorEntity):
     """Water temperature sensor."""
 
     _attr_device_class = SensorDeviceClass.TEMPERATURE

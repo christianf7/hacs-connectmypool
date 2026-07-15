@@ -1,4 +1,4 @@
-"""Number platform for the Astra Pool integration (solar set temperature)."""
+"""Number platform for the Connect My Pool integration (solar set temperature)."""
 
 from __future__ import annotations
 
@@ -7,18 +7,18 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import AstraPoolConfigEntry
+from . import ConnectMyPoolConfigEntry
 from .const import ActionCode, CONF_POOL_API_CODE
-from .entity import AstraPoolEntity, derive_pool_id
+from .entity import ConnectMyPoolEntity, derive_pool_id
 from .models import SolarConfig
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: AstraPoolConfigEntry,
+    entry: ConnectMyPoolConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Astra Pool number entities for solar set temperatures."""
+    """Set up Connect My Pool number entities for solar set temperatures."""
     coordinator = entry.runtime_data
     pool_id = derive_pool_id(entry.data[CONF_POOL_API_CODE])
     config = coordinator.pool_config
@@ -26,14 +26,14 @@ async def async_setup_entry(
     if not config.has_solar_systems:
         return
 
-    entities: list[AstraPoolSolarTemperature] = []
+    entities: list[ConnectMyPoolSolarTemperature] = []
     for solar in config.solar_systems:
-        entities.append(AstraPoolSolarTemperature(coordinator, pool_id, solar))
+        entities.append(ConnectMyPoolSolarTemperature(coordinator, pool_id, solar))
 
     async_add_entities(entities)
 
 
-class AstraPoolSolarTemperature(AstraPoolEntity, NumberEntity):
+class ConnectMyPoolSolarTemperature(ConnectMyPoolEntity, NumberEntity):
     """Solar heater target temperature."""
 
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS

@@ -1,4 +1,4 @@
-"""Tests for the Astra Pool config flow."""
+"""Tests for the Connect My Pool config flow."""
 
 from __future__ import annotations
 
@@ -10,21 +10,21 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
-from custom_components.astra_pool.const import CONF_POOL_API_CODE, DOMAIN
-from custom_components.astra_pool.exceptions import (
-    AstraPoolApiNotEnabledError,
-    AstraPoolAuthenticationError,
-    AstraPoolConnectionError,
-    AstraPoolNotConnectedError,
-    AstraPoolRateLimitError,
+from custom_components.connect_my_pool.const import CONF_POOL_API_CODE, DOMAIN
+from custom_components.connect_my_pool.exceptions import (
+    ConnectMyPoolApiNotEnabledError,
+    ConnectMyPoolAuthenticationError,
+    ConnectMyPoolConnectionError,
+    ConnectMyPoolNotConnectedError,
+    ConnectMyPoolRateLimitError,
 )
-from custom_components.astra_pool.models import PoolConfiguration
+from custom_components.connect_my_pool.models import PoolConfiguration
 
 from .conftest import TEST_API_CODE
 
-PATCH_CLIENT = "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-PATCH_SESSION = "custom_components.astra_pool.config_flow.async_get_clientsession"
-PATCH_SETUP_ENTRY = "custom_components.astra_pool.async_setup_entry"
+PATCH_CLIENT = "custom_components.connect_my_pool.config_flow.ConnectMyPoolApiClient"
+PATCH_SESSION = "custom_components.connect_my_pool.config_flow.async_get_clientsession"
+PATCH_SETUP_ENTRY = "custom_components.connect_my_pool.async_setup_entry"
 
 
 def _minimal_config() -> PoolConfiguration:
@@ -62,7 +62,7 @@ async def test_successful_flow(hass: HomeAssistant) -> None:
         )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "Astra Pool"
+    assert result["title"] == "Connect My Pool"
     assert result["data"][CONF_POOL_API_CODE] == TEST_API_CODE
 
 
@@ -97,7 +97,7 @@ async def test_successful_flow_pool_spa(hass: HomeAssistant) -> None:
         )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "Astra Pool & Spa"
+    assert result["title"] == "Connect My Pool & Spa"
 
 
 async def test_invalid_auth(hass: HomeAssistant) -> None:
@@ -112,7 +112,7 @@ async def test_invalid_auth(hass: HomeAssistant) -> None:
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
-            side_effect=AstraPoolAuthenticationError("Invalid")
+            side_effect=ConnectMyPoolAuthenticationError("Invalid")
         )
 
         result = await hass.config_entries.flow.async_configure(
@@ -136,7 +136,7 @@ async def test_api_not_enabled(hass: HomeAssistant) -> None:
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
-            side_effect=AstraPoolApiNotEnabledError("Not enabled")
+            side_effect=ConnectMyPoolApiNotEnabledError("Not enabled")
         )
 
         result = await hass.config_entries.flow.async_configure(
@@ -160,7 +160,7 @@ async def test_cannot_connect(hass: HomeAssistant) -> None:
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
-            side_effect=AstraPoolConnectionError("timeout")
+            side_effect=ConnectMyPoolConnectionError("timeout")
         )
 
         result = await hass.config_entries.flow.async_configure(
@@ -184,7 +184,7 @@ async def test_pool_not_connected(hass: HomeAssistant) -> None:
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
-            side_effect=AstraPoolNotConnectedError("offline")
+            side_effect=ConnectMyPoolNotConnectedError("offline")
         )
 
         result = await hass.config_entries.flow.async_configure(
@@ -208,7 +208,7 @@ async def test_rate_limited(hass: HomeAssistant) -> None:
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(
-            side_effect=AstraPoolRateLimitError("throttled")
+            side_effect=ConnectMyPoolRateLimitError("throttled")
         )
 
         result = await hass.config_entries.flow.async_configure(

@@ -1,11 +1,11 @@
-"""Constants for the Astra Pool integration."""
+"""Constants for the Connect My Pool integration."""
 
 from __future__ import annotations
 
 import logging
 from enum import IntEnum
 
-DOMAIN = "astra_pool"
+DOMAIN = "connect_my_pool"
 LOGGER = logging.getLogger(__package__)
 
 API_BASE_URL = "https://www.connectmypool.com.au"

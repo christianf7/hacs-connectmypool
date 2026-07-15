@@ -16,13 +16,13 @@ from .const import (
     TemperatureScale,
 )
 from .exceptions import (
-    AstraPoolActionError,
-    AstraPoolApiNotEnabledError,
-    AstraPoolAuthenticationError,
-    AstraPoolConnectionError,
-    AstraPoolError,
-    AstraPoolNotConnectedError,
-    AstraPoolRateLimitError,
+    ConnectMyPoolActionError,
+    ConnectMyPoolApiNotEnabledError,
+    ConnectMyPoolAuthenticationError,
+    ConnectMyPoolConnectionError,
+    ConnectMyPoolError,
+    ConnectMyPoolNotConnectedError,
+    ConnectMyPoolRateLimitError,
 )
 from .models import (
     ChannelConfig,
@@ -49,7 +49,7 @@ def _mask_api_code(code: str) -> str:
     return f"****{code[-4:]}"
 
 
-class AstraPoolApiClient:
+class ConnectMyPoolApiClient:
     """Asynchronous client for the ConnectMyPool API."""
 
     def __init__(
@@ -77,11 +77,11 @@ class AstraPoolApiClient:
                 resp.raise_for_status()
                 data: dict[str, Any] = await resp.json(content_type=None)
         except asyncio.TimeoutError as err:
-            raise AstraPoolConnectionError(
+            raise ConnectMyPoolConnectionError(
                 f"Timeout connecting to ConnectMyPool ({self._masked_code})"
             ) from err
         except aiohttp.ClientError as err:
-            raise AstraPoolConnectionError(
+            raise ConnectMyPoolConnectionError(
                 f"Error connecting to ConnectMyPool ({self._masked_code}): {err}"
             ) from err
 
@@ -96,13 +96,13 @@ class AstraPoolApiClient:
         desc = data.get("failure_description", "Unknown error")
 
         if code in (FailureCode.INVALID_API_CODE, FailureCode.INVALID_API_KEY):
-            raise AstraPoolAuthenticationError(desc)
+            raise ConnectMyPoolAuthenticationError(desc)
         if code == FailureCode.API_NOT_ENABLED:
-            raise AstraPoolApiNotEnabledError(desc)
+            raise ConnectMyPoolApiNotEnabledError(desc)
         if code == FailureCode.TIME_THROTTLE_EXCEEDED:
-            raise AstraPoolRateLimitError(desc)
+            raise ConnectMyPoolRateLimitError(desc)
         if code == FailureCode.POOL_NOT_CONNECTED:
-            raise AstraPoolNotConnectedError(desc)
+            raise ConnectMyPoolNotConnectedError(desc)
         if code in (
             FailureCode.INVALID_ACTION_CODE,
             FailureCode.INVALID_VALUE,
@@ -120,9 +120,9 @@ class AstraPoolApiClient:
             FailureCode.LIGHTING_ZONE_DOES_NOT_SUPPORT_SYNC,
             FailureCode.HEAT_COOL_SELECTION_NOT_SUPPORTED,
         ):
-            raise AstraPoolActionError(code, desc)
+            raise ConnectMyPoolActionError(code, desc)
 
-        raise AstraPoolError(desc)
+        raise ConnectMyPoolError(desc)
 
     # ------------------------------------------------------------------
     # Public API methods

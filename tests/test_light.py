@@ -1,4 +1,4 @@
-"""Tests for the Astra Pool light platform."""
+"""Tests for the Connect My Pool light platform."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ import pytest
 
 from homeassistant.components.light import ColorMode, LightEntityFeature
 
-from custom_components.astra_pool.entity import derive_pool_id
-from custom_components.astra_pool.light import AstraPoolLight
-from custom_components.astra_pool.models import (
+from custom_components.connect_my_pool.entity import derive_pool_id
+from custom_components.connect_my_pool.light import ConnectMyPoolLight
+from custom_components.connect_my_pool.models import (
     LightingColorConfig,
     LightingZoneConfig,
 )
@@ -48,7 +48,7 @@ def test_color_enabled_light(coordinator_mock, pool_id) -> None:
         ),
     )
 
-    entity = AstraPoolLight(coordinator_mock, pool_id, zone_cfg)
+    entity = ConnectMyPoolLight(coordinator_mock, pool_id, zone_cfg)
 
     assert entity.supported_color_modes == {ColorMode.ONOFF}
     assert entity.color_mode == ColorMode.ONOFF
@@ -67,7 +67,7 @@ def test_non_color_light(coordinator_mock, pool_id) -> None:
         colors_available=(),
     )
 
-    entity = AstraPoolLight(coordinator_mock, pool_id, zone_cfg)
+    entity = ConnectMyPoolLight(coordinator_mock, pool_id, zone_cfg)
 
     assert entity.supported_color_modes == {ColorMode.ONOFF}
     assert entity.color_mode == ColorMode.ONOFF
@@ -89,7 +89,7 @@ def test_supported_color_modes_never_empty(coordinator_mock, pool_id) -> None:
             if color_enabled
             else (),
         )
-        entity = AstraPoolLight(coordinator_mock, pool_id, zone_cfg)
+        entity = ConnectMyPoolLight(coordinator_mock, pool_id, zone_cfg)
         assert len(entity.supported_color_modes) > 0
 
 
@@ -100,5 +100,5 @@ def test_light_off_state(coordinator_mock, pool_id) -> None:
         name="Garden Light",
         color_enabled=False,
     )
-    entity = AstraPoolLight(coordinator_mock, pool_id, zone_cfg)
+    entity = ConnectMyPoolLight(coordinator_mock, pool_id, zone_cfg)
     assert entity.is_on is False

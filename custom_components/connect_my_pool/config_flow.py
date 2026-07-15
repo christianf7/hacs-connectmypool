@@ -1,4 +1,4 @@
-"""Config flow for the Astra Pool integration."""
+"""Config flow for the Connect My Pool integration."""
 
 from __future__ import annotations
 
@@ -9,15 +9,15 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import AstraPoolApiClient
+from .api import ConnectMyPoolApiClient
 from .const import CONF_POOL_API_CODE, DOMAIN, LOGGER
 from .entity import derive_pool_id
 from .exceptions import (
-    AstraPoolApiNotEnabledError,
-    AstraPoolAuthenticationError,
-    AstraPoolConnectionError,
-    AstraPoolNotConnectedError,
-    AstraPoolRateLimitError,
+    ConnectMyPoolApiNotEnabledError,
+    ConnectMyPoolAuthenticationError,
+    ConnectMyPoolConnectionError,
+    ConnectMyPoolNotConnectedError,
+    ConnectMyPoolRateLimitError,
 )
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
@@ -27,8 +27,8 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 
-class AstraPoolConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Astra Pool."""
+class ConnectMyPoolConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for Connect My Pool."""
 
     VERSION = 1
 
@@ -46,27 +46,27 @@ class AstraPoolConfigFlow(ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
 
             session = async_get_clientsession(self.hass)
-            client = AstraPoolApiClient(session, api_code)
+            client = ConnectMyPoolApiClient(session, api_code)
 
             try:
                 config = await client.async_get_configuration()
-            except AstraPoolAuthenticationError:
+            except ConnectMyPoolAuthenticationError:
                 errors["base"] = "invalid_auth"
-            except AstraPoolApiNotEnabledError:
+            except ConnectMyPoolApiNotEnabledError:
                 errors["base"] = "api_not_enabled"
-            except AstraPoolNotConnectedError:
+            except ConnectMyPoolNotConnectedError:
                 errors["base"] = "pool_not_connected"
-            except AstraPoolRateLimitError:
+            except ConnectMyPoolRateLimitError:
                 errors["base"] = "rate_limited"
-            except AstraPoolConnectionError:
+            except ConnectMyPoolConnectionError:
                 errors["base"] = "cannot_connect"
             except Exception:
                 LOGGER.exception("Unexpected error during config validation")
                 errors["base"] = "unknown"
             else:
-                title = "Astra Pool"
+                title = "Connect My Pool"
                 if config.pool_spa_selection_enabled:
-                    title = "Astra Pool & Spa"
+                    title = "Connect My Pool & Spa"
 
                 return self.async_create_entry(
                     title=title,
