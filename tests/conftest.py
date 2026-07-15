@@ -8,6 +8,12 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from custom_components.astra_pool.const import CONF_POOL_API_CODE, DOMAIN
+
+
+@pytest.fixture(autouse=True)
+def auto_enable_custom_integrations(enable_custom_integrations):
+    """Enable custom integrations for all tests."""
+    yield
 from custom_components.astra_pool.models import (
     AstraPoolData,
     ChannelConfig,
