@@ -22,6 +22,8 @@ from custom_components.astra_pool.models import PoolConfiguration
 
 from .conftest import TEST_API_CODE
 
+MOCK_SETUP_ENTRY = "custom_components.astra_pool.async_setup_entry"
+
 
 def _minimal_config() -> PoolConfiguration:
     return PoolConfiguration(
@@ -44,9 +46,12 @@ async def test_successful_flow(hass: HomeAssistant) -> None:
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "user"
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(
+            "custom_components.astra_pool.config_flow.AstraPoolApiClient"
+        ) as mock_client_cls,
+        patch(MOCK_SETUP_ENTRY, return_value=True),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(return_value=_minimal_config())
 
@@ -77,9 +82,12 @@ async def test_successful_flow_pool_spa(hass: HomeAssistant) -> None:
         has_favourites=False,
     )
 
-    with patch(
-        "custom_components.astra_pool.config_flow.AstraPoolApiClient"
-    ) as mock_client_cls:
+    with (
+        patch(
+            "custom_components.astra_pool.config_flow.AstraPoolApiClient"
+        ) as mock_client_cls,
+        patch(MOCK_SETUP_ENTRY, return_value=True),
+    ):
         mock_client = mock_client_cls.return_value
         mock_client.async_get_configuration = AsyncMock(return_value=spa_config)
 
