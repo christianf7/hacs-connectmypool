@@ -1,0 +1,11 @@
+{
+  "domain": "astra_pool",
+  "name": "Astra Pool",
+  "codeowners": ["@christianf7"],
+  "config_flow": true,
+  "documentation": "https://github.com/christianf7/HA-Astra-Integration",
+  "issue_tracker": "https://github.com/christianf7/HA-Astra-Integration/issues",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}

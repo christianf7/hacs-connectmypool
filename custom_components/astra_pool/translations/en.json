@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Astra Pool",
+        "description": "Enter your ConnectMyPool Pool API Code. You can find this on the Home Automation page of the ConnectMyPool website after API access has been approved.",
+        "data": {
+          "pool_api_code": "Pool API Code"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid Pool API Code or API key.",
+      "cannot_connect": "Unable to connect to the ConnectMyPool service.",
+      "api_not_enabled": "API access has not been enabled for this pool. Please request access via the ConnectMyPool website.",
+      "pool_not_connected": "The pool system is currently not connected to ConnectMyPool.",
+      "rate_limited": "Too many requests — please wait 60 seconds and try again.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This pool is already configured."
+    }
+  }
+}
