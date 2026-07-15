@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import aiohttp
 import pytest
@@ -33,8 +33,7 @@ def test_mask_api_code() -> None:
 @pytest.fixture
 def mock_session() -> MagicMock:
     """Create a mock aiohttp ClientSession."""
-    session = MagicMock(spec=aiohttp.ClientSession)
-    return session
+    return MagicMock(spec=aiohttp.ClientSession)
 
 
 def _setup_response(session: MagicMock, json_data: dict, status: int = 200):
@@ -47,18 +46,9 @@ def _setup_response(session: MagicMock, json_data: dict, status: int = 200):
             request_info=MagicMock(), history=(), status=status
         )
     response.json = AsyncMock(return_value=json_data)
-
-    cm = AsyncMock()
-    cm.__aenter__ = AsyncMock(return_value=response)
-    cm.__aexit__ = AsyncMock(return_value=False)
-
-    session.post = MagicMock(return_value=cm)
-
-    # Also support direct awaiting pattern
     session.post = AsyncMock(return_value=response)
 
 
-@pytest.mark.asyncio
 async def test_get_configuration_success(mock_session: MagicMock) -> None:
     """Test successful configuration fetch."""
     raw = make_config_raw()
@@ -76,7 +66,6 @@ async def test_get_configuration_success(mock_session: MagicMock) -> None:
     assert len(config.lighting_zones[0].colors_available) == 3
 
 
-@pytest.mark.asyncio
 async def test_get_status_success(mock_session: MagicMock) -> None:
     """Test successful status fetch."""
     raw = make_status_raw()
@@ -93,7 +82,6 @@ async def test_get_status_success(mock_session: MagicMock) -> None:
     assert status.active_favourite == 255
 
 
-@pytest.mark.asyncio
 async def test_invalid_api_code_raises(mock_session: MagicMock) -> None:
     """Test that invalid API code returns AstraPoolAuthenticationError."""
     _setup_response(mock_session, make_error_response(3, "Invalid API Code"))
@@ -104,7 +92,6 @@ async def test_invalid_api_code_raises(mock_session: MagicMock) -> None:
         await client.async_get_configuration()
 
 
-@pytest.mark.asyncio
 async def test_api_not_enabled_raises(mock_session: MagicMock) -> None:
     """Test that API not enabled returns AstraPoolApiNotEnabledError."""
     _setup_response(mock_session, make_error_response(4, "API Not Enabled"))
@@ -115,7 +102,6 @@ async def test_api_not_enabled_raises(mock_session: MagicMock) -> None:
         await client.async_get_configuration()
 
 
-@pytest.mark.asyncio
 async def test_pool_not_connected_raises(mock_session: MagicMock) -> None:
     """Test that pool not connected returns AstraPoolNotConnectedError."""
     _setup_response(mock_session, make_error_response(7, "Pool Not Connected"))
@@ -126,7 +112,6 @@ async def test_pool_not_connected_raises(mock_session: MagicMock) -> None:
         await client.async_get_status()
 
 
-@pytest.mark.asyncio
 async def test_rate_limit_raises(mock_session: MagicMock) -> None:
     """Test that throttle exceeded returns AstraPoolRateLimitError."""
     _setup_response(mock_session, make_error_response(6, "Throttle"))
@@ -137,7 +122,6 @@ async def test_rate_limit_raises(mock_session: MagicMock) -> None:
         await client.async_get_status()
 
 
-@pytest.mark.asyncio
 async def test_action_error_raises(mock_session: MagicMock) -> None:
     """Test that action-specific errors return AstraPoolActionError."""
     _setup_response(mock_session, make_error_response(10, "Invalid Channel Number"))
@@ -150,7 +134,6 @@ async def test_action_error_raises(mock_session: MagicMock) -> None:
     assert exc_info.value.failure_code == 10
 
 
-@pytest.mark.asyncio
 async def test_connection_error_on_timeout(mock_session: MagicMock) -> None:
     """Test that a timeout raises AstraPoolConnectionError."""
     mock_session.post = AsyncMock(side_effect=asyncio.TimeoutError)
@@ -161,7 +144,6 @@ async def test_connection_error_on_timeout(mock_session: MagicMock) -> None:
         await client.async_get_configuration()
 
 
-@pytest.mark.asyncio
 async def test_connection_error_on_client_error(mock_session: MagicMock) -> None:
     """Test that aiohttp errors raise AstraPoolConnectionError."""
     mock_session.post = AsyncMock(
@@ -174,7 +156,6 @@ async def test_connection_error_on_client_error(mock_session: MagicMock) -> None
         await client.async_get_status()
 
 
-@pytest.mark.asyncio
 async def test_execute_action_success(mock_session: MagicMock) -> None:
     """Test successful action execution."""
     _setup_response(

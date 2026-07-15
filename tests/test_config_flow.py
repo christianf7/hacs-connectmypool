@@ -36,7 +36,6 @@ def _minimal_config() -> PoolConfiguration:
     )
 
 
-@pytest.mark.asyncio
 async def test_successful_flow(hass: HomeAssistant) -> None:
     """Test a successful config flow from start to finish."""
     result = await hass.config_entries.flow.async_init(
@@ -61,7 +60,6 @@ async def test_successful_flow(hass: HomeAssistant) -> None:
     assert result["data"][CONF_POOL_API_CODE] == TEST_API_CODE
 
 
-@pytest.mark.asyncio
 async def test_successful_flow_pool_spa(hass: HomeAssistant) -> None:
     """Test that a pool with spa selection gets an appropriate title."""
     result = await hass.config_entries.flow.async_init(
@@ -94,7 +92,6 @@ async def test_successful_flow_pool_spa(hass: HomeAssistant) -> None:
     assert result["title"] == "Astra Pool & Spa"
 
 
-@pytest.mark.asyncio
 async def test_invalid_auth(hass: HomeAssistant) -> None:
     """Test that an invalid API code shows the right error."""
     result = await hass.config_entries.flow.async_init(
@@ -118,7 +115,6 @@ async def test_invalid_auth(hass: HomeAssistant) -> None:
     assert result["errors"] == {"base": "invalid_auth"}
 
 
-@pytest.mark.asyncio
 async def test_api_not_enabled(hass: HomeAssistant) -> None:
     """Test that API-not-enabled produces the right error."""
     result = await hass.config_entries.flow.async_init(
@@ -142,7 +138,6 @@ async def test_api_not_enabled(hass: HomeAssistant) -> None:
     assert result["errors"] == {"base": "api_not_enabled"}
 
 
-@pytest.mark.asyncio
 async def test_cannot_connect(hass: HomeAssistant) -> None:
     """Test that connection failures produce the right error."""
     result = await hass.config_entries.flow.async_init(
@@ -166,7 +161,6 @@ async def test_cannot_connect(hass: HomeAssistant) -> None:
     assert result["errors"] == {"base": "cannot_connect"}
 
 
-@pytest.mark.asyncio
 async def test_pool_not_connected(hass: HomeAssistant) -> None:
     """Test that an offline pool produces the right error."""
     result = await hass.config_entries.flow.async_init(
@@ -190,7 +184,6 @@ async def test_pool_not_connected(hass: HomeAssistant) -> None:
     assert result["errors"] == {"base": "pool_not_connected"}
 
 
-@pytest.mark.asyncio
 async def test_rate_limited(hass: HomeAssistant) -> None:
     """Test that a rate-limit during setup produces the right error."""
     result = await hass.config_entries.flow.async_init(
